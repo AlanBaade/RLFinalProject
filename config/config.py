@@ -1,5 +1,6 @@
 # meta
 is_cuda = False
+reward_type = 'distance'
 
 # env
 board_width = 100
@@ -19,3 +20,6 @@ NUM_DIRECTIONS = 8
 
 offense_start_x = 0
 defense_start_x = 10
+
+ball_speed = 2.0
+ball_slowdown = 0.8
