@@ -1,3 +1,8 @@
 import torch
-print(torch.cuda.is_available())
-print('a')
+import gymnasium as gym
+
+
+import src.environment
+env = gym.make('SoccerEnv-v0')
+env.reset()
+env.render()
