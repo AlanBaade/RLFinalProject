@@ -64,7 +64,7 @@ class BasicEnv(gym.Env):
 
         self.offense_state += np.random.standard_normal(self.offense_state.shape) * self.cfg.random_start_noise
         self.defense_state += np.random.standard_normal(self.defense_state.shape) * self.cfg.random_start_noise
-        self.ball_state += np.random.standard_normal(self.ball_state.shape) * self.cfg.random_start_noise
+        self.ball_state[:2] += np.random.standard_normal(self.ball_state[:2].shape) * self.cfg.random_start_noise
 
         self.step_count = 0
         self.obs_state = self.get_obs_state(self.ball_state, self.offense_state, self.defense_state)
