@@ -87,7 +87,7 @@ class BasicEnv(gym.Env):
         new_offense_state = np.zeros(self.offense_state.shape)
         new_defense_state = np.zeros(self.defense_state.shape)
 
-        any_had_ball = self.obs_state[0, 1]
+        any_had_ball = self.obs_state[0, 1] == 1
         has_ball = self.obs_state[:, 0]
         ball_held = any_had_ball
         ball_velocity = self.ball_state[2:]
@@ -107,10 +107,12 @@ class BasicEnv(gym.Env):
             if action[i] < self.cfg.NUM_DIRECTIONS:
                 new_offense_state[i] = self.offense_state[i] + movements_array[action[i]]
             else:
+                new_offense_state[i] = self.offense_state[i]
                 if has_ball[i]:
                     to_player = action[i] - self.cfg.NUM_DIRECTIONS
                     if to_player == i:
                         continue
+                    new_offense_state[i] = self.offense_state[i]
                     direction_difference = self.offense_state[to_player] - self.ball_state[:2]
                     direction_difference /= (np.linalg.norm(direction_difference) + 1e-5)
                     direction_difference * self.cfg.ball_speed
@@ -136,6 +138,7 @@ class BasicEnv(gym.Env):
         self.ball_state = new_ball_state
         self.defense_state = new_defense_state
         self.offense_state = new_offense_state
+        self.obs_state = self.get_obs_state(self.ball_state, self.offense_state, self.defense_state)
 
         info = {}
         return self.obs_state, reward, done, info

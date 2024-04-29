@@ -22,4 +22,9 @@ offense_start_x = 0
 defense_start_x = 10
 
 ball_speed = 2.0
-ball_slowdown = 0.8
+ball_slowdown = 1.0
+
+
+
+assert ball_speed > offense_radius
+assert defense_speed < defense_radius * 2
