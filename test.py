@@ -11,14 +11,7 @@ import src.environment
 
 
 
-# vec_env = make_vec_env('SoccerEnv-v0', n_envs=4)
-
-# model = PPO("MlpPolicy", vec_env, verbose=1)
-# model.learn(total_timesteps=50000)
-# model.save("soccer-env")
-
-
-model = PPO.load("soccer-env")
+model = PPO.load("models/soccer-joint-marl")
 env = gym.make('SoccerEnv-v0')
 obs, _ = env.reset()
 done = False
