@@ -11,22 +11,24 @@ import src.environment
 
 
 
+# vec_env = make_vec_env('SoccerEnv-v0', n_envs=4)
 
-vec_env = make_vec_env('SoccerEnv-v0', n_envs=4)
+# model = PPO("MlpPolicy", vec_env, verbose=1)
+# model.learn(total_timesteps=50000)
+# model.save("soccer-env")
 
-model = PPO("MlpPolicy", vec_env, verbose=1)
-model.learn(total_timesteps=250000)
-model.save("soccer-env")
-
-del model # remove to demonstrate saving and loading
 
 model = PPO.load("soccer-env")
+env = gym.make('SoccerEnv-v0')
+obs, _ = env.reset()
+done = False
 
-obs = vec_env.reset()
-while True:
-    action, _states = model.predict(obs)
-    obs, rewards, dones, info = vec_env.step(action)
-    vec_env.render("human")
-    print(rewards)
-    print(dones)
+
+while not done:
+    action, _ = model.predict(obs)
+    obs, reward, done, _, _ = env.step(action)
+    env.render()
+
+
+
 
