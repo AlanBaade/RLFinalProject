@@ -3,17 +3,18 @@ import config.config as cfg
 import gymnasium as gym
 import numpy as np
 import time
-
+from src.baseline import baseline_policy
 
 import src.environment
 env = gym.make('SoccerEnv-v0')
-env.reset()
+obs, _ = env.reset()
 env.render()
 
 # t1 = time.time()
 for i in range(100):
-    for j in range(3):
-        a,b,done,c,x = env.step(np.full((cfg.num_offense_players,), 0))
+    for j in range(5):
+        # obs,b,done,c,x = env.step(np.full((cfg.num_offense_players,), 0))
+        obs,b,done,c,x = env.step(baseline_policy(obs, env))
         # print(b)
         if done:
             env.render()
