@@ -48,7 +48,7 @@ class BasicEnv(gym.Env):
     def constrain_bounds(self, ball_state, offense_state, defense_state):
         pass
 
-    def reset(self):
+    def reset(self, seed=0):
         self.offense_state = np.zeros((self.cfg.num_offense_players, 2))
         for i in range(self.cfg.num_offense_players):
             self.offense_state[i][0] = self.cfg.offense_start_x
@@ -64,7 +64,6 @@ class BasicEnv(gym.Env):
 
         self.step_count = 0
         self.obs_state = self.get_obs_state(self.ball_state, self.offense_state, self.defense_state)
-        print(self.obs_state)
 
         return self.obs_state, {}
 
@@ -141,7 +140,7 @@ class BasicEnv(gym.Env):
         self.obs_state = self.get_obs_state(self.ball_state, self.offense_state, self.defense_state)
 
         info = {}
-        return self.obs_state, reward, done, info
+        return self.obs_state, reward, done, False, info
 
     def render(self, mode='human'):
         if mode == 'human':
