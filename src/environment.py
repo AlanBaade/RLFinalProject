@@ -156,8 +156,16 @@ class BasicEnv(gym.Env):
 
         self.step_count += 1
         self.ball_state = new_ball_state
-        self.defense_state = new_defense_state
         self.offense_state = new_offense_state
+        self.defense_state = new_defense_state
+
+        self.ball_state[0:1] = self.ball_state[0:1].clip(min=0, max=self.cfg.board_width)
+        self.ball_state[1:2] = self.ball_state[1:2].clip(min=0, max=self.cfg.board_height)
+        self.offense_state[:, 0:1] = self.offense_state[:, 0:1].clip(min=0, max=self.cfg.board_width)
+        self.offense_state[:, 1:2] = self.offense_state[:, 1:2].clip(min=0, max=self.cfg.board_height)
+        self.defense_state[:, 0:1] = self.defense_state[:, 0:1].clip(min=0, max=self.cfg.board_width)
+        self.defense_state[:, 1:2] = self.defense_state[:, 1:2].clip(min=0, max=self.cfg.board_height)
+
         self.obs_state = self.get_obs_state(self.ball_state, self.offense_state, self.defense_state)
 
         info = {}

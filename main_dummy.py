@@ -13,9 +13,10 @@ env.render()
 # t1 = time.time()
 for i in range(100):
     for j in range(3):
-        a,b,done,c,x = env.step(np.full((cfg.num_offense_players,), 8))
+        a,b,done,c,x = env.step(np.full((cfg.num_offense_players,), 0))
         # print(b)
         if done:
+            env.render()
             assert False
     env.render()
 # t2 = time.time()
