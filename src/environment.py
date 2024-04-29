@@ -166,7 +166,7 @@ class BasicEnv(gym.Env):
 
     def render(self, mode='human'):
         if mode == 'human':
-            fig, ax = plt.subplots(figsize=(self.cfg.board_width / 3, self.cfg.board_height / 3))
+            fig, ax = plt.subplots(figsize=(self.cfg.board_width / 10, self.cfg.board_height / 10))
             ax.set_xlim(-10, self.cfg.board_width)
             ax.set_ylim(0, self.cfg.board_height)
             for i in range(self.cfg.num_offense_players):
