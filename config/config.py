@@ -1,6 +1,7 @@
 # meta
 is_cuda = False
 reward_type = 'distance'
+random_start_noise = 3
 
 # env
 board_width = 100
@@ -22,7 +23,9 @@ offense_start_x = 0
 defense_start_x = 10
 
 ball_speed = 2.0
-ball_slowdown = 0.9
+ball_slowdown = 0.97
+
+
 
 
 
