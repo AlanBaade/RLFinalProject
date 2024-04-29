@@ -80,7 +80,7 @@ class BasicEnv(gym.Env):
             [1, 0],
             [0, -1],
             [-1, 0],
-        ]) * self.cfg.offsense_speed
+        ]) * self.cfg.offense_speed
 
         new_ball_state = np.zeros(self.ball_state.shape)
         new_offense_state = np.zeros(self.offense_state.shape)
@@ -93,10 +93,31 @@ class BasicEnv(gym.Env):
         defenders_win = False
 
         # defense moves first
-        # hardcoded
+        offense_ball_distances = self.obs_state[:,3]
+        defender_targets = np.argsort(offense_ball_distances)
+        defense_target_points = np.zeros((self.cfg.num_defense_players, 2))
+        defense_target_points[0] = self.ball_state[:2]
+        i = 1 if ball_held else 0
+        for j in range(1, self.cfg.num_defense_players):
+            defense_target_points[j] = self.offense_state[defender_targets[i]]
+            i+=1
+        defense_target_points_aligned = np.zeros((self.cfg.num_defense_players, 2))
+        defense_taken = set()
+        for i in range(self.cfg.num_defense_players):
+            min_defender = 0
+            min_dist = np.inf
+            for j in range(self.cfg.num_defense_players):
+                if j in defense_taken:
+                    continue
+                cur_dist = self.get_angle_distance(defense_target_points[i], self.defense_state[j])[1]
+                if cur_dist < min_dist:
+                    min_defender = j
+                    min_dist = cur_dist
+            defense_taken.add(min_defender)
+            defense_target_points_aligned[min_defender] = defense_target_points[i]
 
         for i in range(self.cfg.num_defense_players):
-            direction_difference = self.ball_state[:2] - self.defense_state[i]
+            direction_difference = defense_target_points_aligned[i] - self.defense_state[i]
             direction_difference /= (np.linalg.norm(direction_difference) + 1e-5)
             new_defense_state[i] = self.defense_state[i] + direction_difference * self.cfg.defense_speed
             if self.get_angle_distance(new_defense_state[i], self.ball_state[:2])[1] < self.cfg.defense_radius:
@@ -140,7 +161,8 @@ class BasicEnv(gym.Env):
         self.obs_state = self.get_obs_state(self.ball_state, self.offense_state, self.defense_state)
 
         info = {}
-        return self.obs_state, reward, done, False, info
+        truncated = False
+        return self.obs_state, reward, done, truncated, info
 
     def render(self, mode='human'):
         if mode == 'human':
