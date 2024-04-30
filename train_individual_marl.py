@@ -20,8 +20,12 @@ from custom_extractor import CustomExtractor
 policy_kwargs = dict(
     features_extractor_class=CustomExtractor
 )
+
 model = PPO(CustomActorCriticPolicy, vec_env, policy_kwargs=policy_kwargs, verbose=1)
 
+out_path = "experiment_out/soccer-individual-marl"
+logger = configure(out_path, ["stdout", "csv"])
+model.set_logger(logger)
 
 while True:
   model.learn(total_timesteps=100000)

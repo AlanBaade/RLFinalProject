@@ -25,12 +25,12 @@ ball_speed = 2.5
 ball_slowdown = 0.95
 
 # large
-board_width = 100
-board_height = 75
-max_steps = 200
-num_offense_players = 11
-num_defense_players = 6
-defense_start_x = 40
+# board_width = 100
+# board_height = 75
+# max_steps = 200
+# num_offense_players = 11
+# num_defense_players = 6
+# defense_start_x = 40
 
 
 

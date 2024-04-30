@@ -24,6 +24,10 @@ model = PPO(
     learning_rate=0.0003,
 )
 
+out_path = "experiment_out/soccer-joint-transformer"
+logger = configure(out_path, ["stdout", "csv"])
+model.set_logger(logger)
+
 while True:
     model.learn(total_timesteps=16384)
     model.save("models/soccer-joint-transformer")
