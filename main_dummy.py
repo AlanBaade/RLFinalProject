@@ -12,7 +12,7 @@ env.render()
 
 # t1 = time.time()
 for i in range(100):
-    for j in range(5):
+    for j in range(1):
         # obs,b,done,c,x = env.step(np.full((cfg.num_offense_players,), 0))
         obs,b,done,c,x = env.step(baseline_policy(obs, env))
         # print(b)

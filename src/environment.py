@@ -4,12 +4,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def get_angle_distance(from_, to_):
-    angle = np.arctan2(to_[1] - from_[1], to_[0] - from_[0])
-    distance = np.sqrt((to_[0] - from_[0]) ** 2 + (to_[1] - from_[1]) ** 2)
-    return angle, distance
-
-
 class BasicEnv(gym.Env):
     def __init__(self):
         super().__init__()
@@ -37,25 +31,35 @@ class BasicEnv(gym.Env):
         ])
         self.MOVE_RIGHT = 5
 
+    def get_distance(self, from_, to_):
+        distance = np.sqrt((to_[0] - from_[0]) ** 2 + (to_[1] - from_[1]) ** 2)
+        return distance
+
+    def get_obs_angle_distance(self, from_, to_):
+        angle = np.arctan2(to_[1] - from_[1], to_[0] - from_[0])
+        distance = self.get_distance(from_, to_) / self.cfg.board_height
+        return angle, distance
+
     def get_obs_state(self, ball_state, offense_state, defense_state):
         res = np.zeros((self.cfg.num_offense_players, 2 + 2 * (1 + self.cfg.num_offense_players + self.cfg.num_defense_players) + 2))
         for i in range(self.cfg.num_offense_players):
             cnt = 2
-            res[i, cnt:cnt + 2] = get_angle_distance(offense_state[i], ball_state[:2])
+            res[i, cnt:cnt + 2] = self.get_obs_angle_distance(offense_state[i], ball_state[:2])
             cnt += 2
             for j in range(self.cfg.num_offense_players):
-                res[i, cnt:cnt + 2] = get_angle_distance(offense_state[i], offense_state[j])
+                res[i, cnt:cnt + 2] = self.get_obs_angle_distance(offense_state[i], offense_state[j])
                 cnt += 2
             for j in range(self.cfg.num_defense_players):
-                res[i, cnt:cnt + 2] = get_angle_distance(offense_state[i], defense_state[j])
+                res[i, cnt:cnt + 2] = self.get_obs_angle_distance(offense_state[i], defense_state[j])
                 cnt += 2
 
         offense_distances = res[:, 3]
-        any_offense_has_ball = offense_distances.min() < self.cfg.offense_radius
+        any_offense_has_ball = offense_distances.min() * self.cfg.board_height < self.cfg.offense_radius
         res[:, 1] = 1 if any_offense_has_ball else 0
         if any_offense_has_ball:
             res[np.argmin(offense_distances)][0] = 1
-        res[:, -2:] = offense_state
+        res[:, -2] = offense_state[:, 0] / self.cfg.board_width
+        res[:, -1] = offense_state[:, 1] / self.cfg.board_height
 
         return res
 
@@ -73,12 +77,11 @@ class BasicEnv(gym.Env):
             self.defense_state[i][0] = self.cfg.defense_start_x
             self.defense_state[i][1] = self.cfg.board_height * (i + 0.5) / self.cfg.num_defense_players
 
-        self.ball_state = np.zeros((4,))
-        self.ball_state[:2] = self.offense_state[self.cfg.num_offense_players // 2]
-
         self.offense_state += np.random.standard_normal(self.offense_state.shape) * self.cfg.random_start_noise
         self.defense_state += np.random.standard_normal(self.defense_state.shape) * self.cfg.random_start_noise
-        self.ball_state[:2] += np.random.standard_normal(self.ball_state[:2].shape) * self.cfg.random_start_noise
+
+        self.ball_state = np.zeros((4,))
+        self.ball_state[:2] = self.offense_state[self.cfg.num_offense_players // 2]
 
         self.step_count = 0
         self.obs_state = self.get_obs_state(self.ball_state, self.offense_state, self.defense_state)
@@ -116,7 +119,7 @@ class BasicEnv(gym.Env):
             for j in range(self.cfg.num_defense_players):
                 if j in defense_taken:
                     continue
-                cur_dist = get_angle_distance(defense_target_points[i], self.defense_state[j])[1]
+                cur_dist = self.get_distance(defense_target_points[i], self.defense_state[j])
                 if cur_dist < min_dist:
                     min_defender = j
                     min_dist = cur_dist
@@ -127,7 +130,7 @@ class BasicEnv(gym.Env):
             direction_difference = defense_target_points_aligned[i] - self.defense_state[i]
             direction_difference /= (np.linalg.norm(direction_difference) + 1e-5)
             new_defense_state[i] = self.defense_state[i] + direction_difference * self.cfg.defense_speed
-            if get_angle_distance(new_defense_state[i], self.ball_state[:2])[1] < self.cfg.defense_radius:
+            if self.get_distance(new_defense_state[i], self.ball_state[:2]) < self.cfg.defense_radius:
                 defenders_win = True
 
         for i in range(self.cfg.num_offense_players):
@@ -152,8 +155,12 @@ class BasicEnv(gym.Env):
             new_ball_state[:2] = self.ball_state[:2] + ball_velocity
             new_ball_state[2:] = ball_velocity * self.cfg.ball_slowdown
 
+        offenders_win = new_ball_state[0] >= self.cfg.board_width-1
         if defenders_win:
             reward = -self.cfg.board_width
+            done = True
+        elif offenders_win:
+            reward = self.cfg.board_width - self.ball_state[0]
             done = True
         else:
             reward = new_ball_state[0] - self.ball_state[0]
