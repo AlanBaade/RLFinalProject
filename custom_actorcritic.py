@@ -275,11 +275,11 @@ class ActorCriticPolicy(BasePolicy):
             latent_pi = self.mlp_extractor.forward_actor(pi_features)
             latent_vf = self.mlp_extractor.forward_critic(vf_features)
         # Evaluate the values for the given observations
-        values = np.sum(self.value_net(latent_vf), axis=-1)
+        values = self.value_net(latent_vf).sum(axis=1)
         distribution = self._get_action_dist_from_latent(latent_pi)
         actions = distribution.get_actions(deterministic=deterministic)
-        log_prob = distribution.log_prob(actions)
         actions = actions.reshape((-1, *self.action_space.shape))  # type: ignore[misc]
+        log_prob = distribution.log_prob(actions).sum(axis=1)
         return actions, values, log_prob
 
     def extract_features(  # type: ignore[override]
@@ -363,6 +363,8 @@ class ActorCriticPolicy(BasePolicy):
         log_prob = distribution.log_prob(actions)
         values = self.value_net(latent_vf)
         entropy = distribution.entropy()
+        log_prob = log_prob.reshape(-1, 3).sum(axis=1)
+        values = values.reshape(-1, 3).sum(axis=1)
         return values, log_prob, entropy
 
     def get_distribution(self, obs: PyTorchObs) -> Distribution:
