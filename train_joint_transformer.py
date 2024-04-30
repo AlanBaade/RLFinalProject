@@ -20,10 +20,10 @@ model = PPO(
     TransformerActorCriticPolicy,
     vec_env,
     verbose=1,
-    n_steps=128,
-    learning_rate=0.003,
+    n_steps=32,
+    learning_rate=0.0003,
 )
 
 while True:
-    model.learn(total_timesteps=100000)
-    model.save("models/soccer-joint-marl")
+    model.learn(total_timesteps=16384)
+    model.save("models/soccer-joint-transformer")
