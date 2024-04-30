@@ -5,7 +5,8 @@ import numpy as np
 import time
 from stable_baselines3 import PPO
 from stable_baselines3.common.env_util import make_vec_env
-
+from stable_baselines3.common.logger import configure
+import time
 
 import src.environment
 
@@ -27,8 +28,12 @@ out_path = "experiment_out/soccer-individual-marl"
 logger = configure(out_path, ["stdout", "csv"])
 model.set_logger(logger)
 
+start = time.time()
+
 while True:
   model.learn(total_timesteps=100000)
   model.save("models/soccer-individual-marl")
+  print("TIME")
+  print(time.time() - start)
 
 

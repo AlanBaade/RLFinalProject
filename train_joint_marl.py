@@ -10,6 +10,7 @@ from stable_baselines3.common.logger import configure
 
 import src.environment
 import nn
+import time
 
 
 
@@ -21,9 +22,12 @@ out_path = "experiment_out/soccer-joint-marl"
 logger = configure(out_path, ["stdout", "csv"])
 model.set_logger(logger)
 
+start = time.time()
 while True:
   model.learn(total_timesteps=100000)
   model.save("models/soccer-joint-marl")
+  print("TIME")
+  print(time.time() - start)
 
 
 
