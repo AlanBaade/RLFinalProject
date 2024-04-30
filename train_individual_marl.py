@@ -25,6 +25,6 @@ model = PPO(CustomActorCriticPolicy, vec_env, policy_kwargs=policy_kwargs, verbo
 
 while True:
   model.learn(total_timesteps=100000)
-  model.save("models/soccer-joint-marl")
+  model.save("models/soccer-individual-marl")
 
 
