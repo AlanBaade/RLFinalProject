@@ -21,6 +21,7 @@ model = PPO(
     vec_env,
     verbose=1,
     n_steps=128,
+    learning_rate=0.003,
 )
 
 while True:

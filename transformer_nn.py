@@ -18,8 +18,8 @@ class TransformerNetwork(nn.Module):
     def __init__(
             self,
             feature_dim: int,
-            last_layer_dim_pi: int = 48,
-            last_layer_dim_vf: int = 48,
+            last_layer_dim_pi: int = 66,
+            last_layer_dim_vf: int = 66,
             num_offense: int = 3,
     ):
         super().__init__()
@@ -36,7 +36,7 @@ class TransformerNetwork(nn.Module):
         self.policy_net = nn.Sequential(
             nn.Linear(self.emb_dim, d_model),
             *[nn.TransformerEncoderLayer(d_model=d_model, nhead=2, dim_feedforward=128, dropout=0.1, layer_norm_eps=1e-05, batch_first=True, norm_first=False,
-                                         bias=True) for _ in range(2)],
+                                         bias=True) for _ in range(4)],
             nn.Linear(d_model, last_layer_dim_pi // num_offense)
         )
 

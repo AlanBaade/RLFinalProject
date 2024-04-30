@@ -190,9 +190,9 @@ class BasicEnv(gym.Env):
             ax.set_xlim(-10, self.cfg.board_width)
             ax.set_ylim(0, self.cfg.board_height)
             for i in range(self.cfg.num_offense_players):
-                ax.add_patch(plt.Circle(self.offense_state[i], 1, facecolor='b', linewidth=1, edgecolor='k', linestyle='solid'))
+                ax.add_patch(plt.Circle(self.offense_state[i], self.cfg.offense_radius, facecolor='b', linewidth=1, edgecolor='k', linestyle='solid'))
             for i in range(self.cfg.num_defense_players):
-                ax.add_patch(plt.Circle(self.defense_state[i], 1, facecolor='r', linewidth=1, edgecolor='k', linestyle='solid'))
+                ax.add_patch(plt.Circle(self.defense_state[i], self.cfg.defense_radius, facecolor='r', linewidth=1, edgecolor='k', linestyle='solid'))
             ax.add_patch(plt.Circle(self.ball_state[:2], 0.5, facecolor='w', linewidth=1, edgecolor='k', linestyle='solid'))
             ax.set_facecolor('g')
             plt.show()

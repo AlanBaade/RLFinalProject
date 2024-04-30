@@ -18,7 +18,9 @@ idx = 0
 while not done:
     action, _ = model.predict(obs)
     obs, reward, done, _, _ = env.step(action)
-    if idx % 1 == 0:
+    if idx % 2 == 0:
         env.render()
-        time.sleep(0.1)
+        time.sleep(0.5)
     idx += 1
+env.render()
+print(idx)

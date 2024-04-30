@@ -4,15 +4,21 @@ reward_type = 'distance'
 random_start_noise = 2
 
 # env
+# board_width = 100
+# board_height = 30
+# max_steps = 200
+# num_offense_players = 3
+# num_defense_players = 2
+
 board_width = 100
-board_height = 30
+board_height = 75
 max_steps = 200
+num_offense_players = 11
+num_defense_players = 6
 
-num_offense_players = 3
-num_defense_players = 2
 
-offense_radius = 0.75
-defense_radius = 0.8
+offense_radius = 1.25
+defense_radius = 1.3
 
 offense_speed = 1.25
 defense_speed = 1.5
