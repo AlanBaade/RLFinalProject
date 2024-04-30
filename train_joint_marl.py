@@ -15,7 +15,8 @@ import nn
 vec_env = make_vec_env("SoccerEnv-v0", n_envs=4)
 
 model = PPO("MlpPolicy", vec_env, verbose=1)
-model.learn(total_timesteps=50000)
-model.save("models/soccer-joint-marl")
+while True:
+  model.learn(total_timesteps=50000)
+  model.save("models/soccer-joint-marl")
 
 
