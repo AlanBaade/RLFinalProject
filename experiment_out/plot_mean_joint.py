@@ -10,7 +10,7 @@ with open(fn, newline='') as csvfile:
   for i, row in enumerate(rdr):
     if 0<i and i<n_max:
       try:
-        y.append(float(row[3]))
+        y.append(float(row[4]))
       except ValueError:
         pass
 x = list(range(len(y)))

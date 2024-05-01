@@ -1,9 +1,8 @@
-import plotter
 import csv
+import plotter
 
-fn = "experiment_out/soccer-joint-transformer/progress.csv"
-n_max = 1000
-
+fn = "experiment_out/a2c/soccer-joint-marl/progress.csv"
+n_max = 200
 
 y = []
 with open(fn, newline='') as csvfile:
@@ -11,7 +10,7 @@ with open(fn, newline='') as csvfile:
   for i, row in enumerate(rdr):
     if 0<i and i<n_max:
       try:
-        y.append(float(row[1]))
+        y.append(float(row[2]))
       except ValueError:
         pass
 x = list(range(len(y)))
