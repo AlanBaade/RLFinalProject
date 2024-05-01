@@ -7,7 +7,7 @@ def baseline_policy(obs, env):
         if obs[i][1] == 1:
             if obs[i][0] == 1:
                 defender_distances = obs[i][4 + 2 * env.cfg.num_offense_players + 1:4 + 2 * (env.cfg.num_offense_players + env.cfg.num_defense_players) + 1:2]
-                if defender_distances.min() * env.cfg.board_height < env.cfg.defense_speed * 1.5 + env.cfg.defense_radius * 1.5:
+                if defender_distances.min() * env.cfg.board_height < env.cfg.defense_speed * 2.5 + env.cfg.defense_radius * 1.5:
                     action[i] = env.cfg.NUM_DIRECTIONS + (i + 1) % env.cfg.num_offense_players
                 else:
                     action[i] = env.MOVE_RIGHT
