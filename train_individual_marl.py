@@ -1,5 +1,4 @@
 import torch
-import config.config as cfg
 import gymnasium as gym
 import numpy as np
 import time
@@ -10,14 +9,15 @@ import time
 
 import src.environment
 
-vec_env = make_vec_env("SoccerEnv", n_envs=8)
+import config.config_small_train as cfg
+vec_env = make_vec_env("SoccerEnv-v0", env_kwargs={"cfg": cfg}, n_envs=8)
 
 
 
 
 
-from custom_nn import CustomActorCriticPolicy
-from custom_extractor import CustomExtractor
+from individual_marl.custom_nn import CustomActorCriticPolicy
+from individual_marl.custom_extractor import CustomExtractor
 policy_kwargs = dict(
     features_extractor_class=CustomExtractor
 )

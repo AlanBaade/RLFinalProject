@@ -1,5 +1,4 @@
 import torch
-import config.config as cfg
 import gymnasium as gym
 import numpy as np
 import time
@@ -10,13 +9,11 @@ from stable_baselines3.common.logger import configure
 import src.environment
 import time
 
-vec_env = make_vec_env(
-    "SoccerEnv",
-    n_envs=16,
-)
+import config.config_small_train as cfg
+vec_env = make_vec_env("SoccerEnv-v0", env_kwargs={"cfg": cfg}, n_envs=8)
 
-from transformer_nn import TransformerActorCriticPolicy
-from custom_extractor import CustomExtractor
+from transformer.transformer_nn import TransformerActorCriticPolicy
+from individual_marl.custom_extractor import CustomExtractor
 
 model = PPO(
     TransformerActorCriticPolicy,

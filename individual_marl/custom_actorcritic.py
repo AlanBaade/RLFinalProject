@@ -34,9 +34,7 @@ from stable_baselines3.common.policies import BasePolicy
 from stable_baselines3.common.type_aliases import PyTorchObs, Schedule
 from stable_baselines3.common.utils import get_device, is_vectorized_observation, obs_as_tensor
 from gymnasium import spaces
-import config.config as cfg
 
-special_action_space = spaces.Discrete(cfg.NUM_DIRECTIONS + cfg.num_offense_players)
 
 class ActorCriticPolicy(BasePolicy):
     """
@@ -155,7 +153,7 @@ class ActorCriticPolicy(BasePolicy):
         self.dist_kwargs = dist_kwargs
 
         # Action distribution
-        self.action_dist = make_proba_distribution(special_action_space, use_sde=use_sde, dist_kwargs=dist_kwargs)
+        self.action_dist = make_proba_distribution(spaces.Discrete(action_space.nvec[0]), use_sde=use_sde, dist_kwargs=dist_kwargs)
 
         self._build(lr_schedule)
 

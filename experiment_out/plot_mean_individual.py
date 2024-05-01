@@ -1,16 +1,22 @@
-import matplotlib.pyplot as plt
 import csv
+import plotter
+
+
 
 fn = "experiment_out/soccer-individual-marl/progress.csv"
+n_max = 1000
+
 
 y = []
 with open(fn, newline='') as csvfile:
   rdr = csv.reader(csvfile, delimiter=',')
   for i, row in enumerate(rdr):
-    if i > 0:
-      y.append(float(row[4]))
+    if 0<i and i<n_max:
+      try:
+        y.append(float(row[4]))
+      except ValueError:
+        pass
 x = list(range(len(y)))
-plt.plot(x, y)
-plt.show()
+plotter.plot(x, y)
 
 

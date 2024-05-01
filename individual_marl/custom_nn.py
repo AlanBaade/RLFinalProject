@@ -3,7 +3,7 @@ from gymnasium import spaces
 import torch as th
 from torch import nn
 from stable_baselines3 import PPO
-from custom_actorcritic import ActorCriticPolicy
+from individual_marl.custom_actorcritic import ActorCriticPolicy
 
 
 class CustomNetwork(nn.Module):

@@ -1,5 +1,4 @@
 import torch
-import config.config as cfg
 import gymnasium as gym
 import numpy as np
 import time
@@ -10,7 +9,9 @@ import time
 import src.environment
 
 model = PPO.load("models/soccer-joint-marl")
-env = gym.make('SoccerEnv-v0')
+import config.config_small_test as cfg
+
+env = gym.make('SoccerEnv-v0', cfg=cfg)
 obs, _ = env.reset()
 done = False
 

@@ -5,9 +5,8 @@ import matplotlib.pyplot as plt
 
 
 class BasicEnv(gym.Env):
-    def __init__(self):
+    def __init__(self, cfg):
         super().__init__()
-        import config.config as cfg
         self.cfg = cfg
 
         self.action_space = spaces.MultiDiscrete(

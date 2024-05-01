@@ -6,7 +6,9 @@ import time
 from src.baseline import baseline_policy
 
 import src.environment
-env = gym.make('SoccerEnv-v0')
+import config.config_small_test as cfg
+
+env = gym.make('SoccerEnv-v0', cfg=cfg)
 obs, _ = env.reset()
 env.render()
 

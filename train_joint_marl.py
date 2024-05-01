@@ -1,5 +1,4 @@
 import torch
-import config.config as cfg
 import gymnasium as gym
 import numpy as np
 import time
@@ -9,12 +8,12 @@ from stable_baselines3.common.logger import configure
 
 
 import src.environment
-import nn
 import time
 
 
 
-vec_env = make_vec_env("SoccerEnv-v0", n_envs=4)
+import config.config_small_train as cfg
+vec_env = make_vec_env("SoccerEnv-v0", env_kwargs={"cfg": cfg}, n_envs=8)
 
 model = PPO("MlpPolicy", vec_env, verbose=1)
 
