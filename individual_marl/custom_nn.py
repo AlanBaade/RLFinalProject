@@ -4,6 +4,7 @@ import torch as th
 from torch import nn
 from stable_baselines3 import PPO
 from individual_marl.custom_actorcritic import ActorCriticPolicy
+import individual_marl.new_buffers
 
 
 class CustomNetwork(nn.Module):
