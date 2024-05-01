@@ -361,8 +361,8 @@ class ActorCriticPolicy(BasePolicy):
         log_prob = distribution.log_prob(actions)
         values = self.value_net(latent_vf)
         entropy = distribution.entropy()
-        log_prob = log_prob.reshape(-1, 3).sum(axis=1)
-        values = values.reshape(-1, 3).sum(axis=1)
+        log_prob = log_prob.reshape(-1, 8).sum(axis=1)
+        values = values.reshape(-1, 8).sum(axis=1)
         return values, log_prob, entropy
 
     def get_distribution(self, obs: PyTorchObs) -> Distribution:

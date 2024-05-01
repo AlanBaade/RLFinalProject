@@ -17,7 +17,7 @@ model = PPO(
     "MlpPolicy",
     vec_env,
     verbose=1,
-    n_steps=32,
+    # n_steps=32,
 )
 
 out_path = "experiment_out/soccer-joint-marl-large"

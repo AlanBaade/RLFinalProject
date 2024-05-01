@@ -5,38 +5,29 @@ import time
 from stable_baselines3 import PPO
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.logger import configure
-import time
 
 import src.environment
+import time
 
-import config.config_large_train as cfg
+import config.config_small_train as cfg
 
 vec_env = make_vec_env("SoccerEnv-v0", env_kwargs={"cfg": cfg}, n_envs=8)
 
-from individual_marl.custom_nn import CustomActorCriticPolicy
-from individual_marl.custom_extractor import CustomExtractor
-
-policy_kwargs = dict(
-    features_extractor_class=CustomExtractor
-)
-
+from transformer.linear_attention import LAActorCriticPolicy
 
 model = PPO(
-    CustomActorCriticPolicy,
+    LAActorCriticPolicy,
     vec_env,
-    policy_kwargs=policy_kwargs,
     verbose=1,
-    # n_steps=128,
 )
 
-out_path = "experiment_out/soccer-individual-marl-large"
+out_path = "experiment_out/soccer-joint-linear-2"
 logger = configure(out_path, ["stdout", "csv"])
 model.set_logger(logger)
 
 start = time.time()
-
 while True:
-    model.learn(total_timesteps=16384)
-    model.save("models/soccer-individual-marl-large")
+    model.learn(total_timesteps=100000)
+    model.save("models/soccer-joint-linear-2")
     print("TIME")
     print(time.time() - start)
