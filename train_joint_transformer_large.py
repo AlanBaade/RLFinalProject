@@ -20,8 +20,7 @@ model = PPO(
     TransformerActorCriticPolicy,
     vec_env,
     verbose=1,
-    n_steps=32,
-    learning_rate=0.0003,
+    n_steps=128,
 )
 
 out_path = "experiment_out/soccer-joint-transformer-large"
