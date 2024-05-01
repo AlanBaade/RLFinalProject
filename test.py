@@ -8,7 +8,7 @@ import time
 
 import src.environment
 
-model = PPO.load("models/soccer-joint-marl")
+model = PPO.load("models/soccer-joint-transformer-large")
 import config.config_small_test as cfg
 
 env = gym.make('SoccerEnv-v0', cfg=cfg)

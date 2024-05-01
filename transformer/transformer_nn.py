@@ -18,8 +18,8 @@ class TransformerNetwork(nn.Module):
     def __init__(
             self,
             feature_dim: int,
-            last_layer_dim_pi: int = 66,
-            last_layer_dim_vf: int = 66,
+            last_layer_dim_pi: int = 48,
+            last_layer_dim_vf: int = 48,
             num_offense: int = 3,
     ):
         super().__init__()
@@ -33,40 +33,50 @@ class TransformerNetwork(nn.Module):
 
         # Policy network
         d_model = 64
-        self.policy_net = nn.Sequential(
+        self.shared_net = nn.Sequential(
             nn.Linear(self.emb_dim, d_model),
-            *[nn.TransformerEncoderLayer(d_model=d_model, nhead=2, dim_feedforward=128, dropout=0.1, layer_norm_eps=1e-05, batch_first=True, norm_first=False,
-                                         bias=True) for _ in range(4)],
+            *[nn.TransformerEncoderLayer(d_model=d_model, nhead=1, dim_feedforward=64, dropout=0.1, layer_norm_eps=1e-05, batch_first=True, norm_first=False,
+                                         bias=True) for _ in range(2)],
+        )
+
+        self.policy_net = nn.Sequential(
+            *[nn.TransformerEncoderLayer(d_model=d_model, nhead=1, dim_feedforward=64, dropout=0.1, layer_norm_eps=1e-05, batch_first=True, norm_first=False,
+                                         bias=True) for _ in range(1)],
             nn.Linear(d_model, last_layer_dim_pi // num_offense)
         )
 
         # Value network
         self.value_net = nn.Sequential(
-            nn.Linear(self.emb_dim, d_model),
-            *[nn.TransformerEncoderLayer(d_model=d_model, nhead=2, dim_feedforward=128, dropout=0.1, layer_norm_eps=1e-05, batch_first=True, norm_first=False,
-                                         bias=True) for _ in range(2)],
+            *[nn.TransformerEncoderLayer(d_model=d_model, nhead=1, dim_feedforward=64, dropout=0.1, layer_norm_eps=1e-05, batch_first=True, norm_first=False,
+                                         bias=True) for _ in range(1)],
             nn.Linear(d_model, last_layer_dim_pi // num_offense)
         )
 
         self.num_offense = num_offense
 
+    def get_shared(self, features):
+        b, tc = features.shape
+        features = features.view(b, self.num_offense, self.emb_dim)
+        shared_features = self.shared_net(features)
+        return shared_features
+
     def forward(self, features: th.Tensor) -> Tuple[th.Tensor, th.Tensor]:
-        res = self.forward_actor(features), self.forward_critic(features)
-        # print('forward', res[0].shape, res[1].shape, res)
+        shared_features = self.get_shared(features)
+        res = self.forward_actor(shared_features, shared=True), self.forward_critic(shared_features, shared=True)
         return res
 
-    def forward_actor(self, features: th.Tensor) -> th.Tensor:
-        b, tc = features.shape
-        features = features.view(b * self.num_offense, self.emb_dim)
+    def forward_actor(self, features: th.Tensor, shared=False) -> th.Tensor:
+        if not shared:
+            features = self.get_shared(features)
         res = self.policy_net(features)
-        res = res.view(b, -1)
+        res = res.view(features.size(0), -1)
         return res
 
-    def forward_critic(self, features: th.Tensor) -> th.Tensor:
-        b, tc = features.shape
-        features = features.view(b * self.num_offense, self.emb_dim)
+    def forward_critic(self, features: th.Tensor, shared=False) -> th.Tensor:
+        if not shared:
+            features = self.get_shared(features)
         res = self.value_net(features)
-        res = res.view(b, -1)
+        res = res.view(features.size(0), -1)
         return res
 
 
