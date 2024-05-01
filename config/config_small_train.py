@@ -24,7 +24,7 @@ defense_start_x = 40
 ball_speed = 2.5
 ball_slowdown = 0.95
 
-
+agent_progress_reward_scale = .1
 
 
 assert ball_speed > offense_radius

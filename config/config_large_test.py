@@ -5,7 +5,7 @@ random_start_noise = 8
 
 # env
 board_width = 100
-board_height = 75
+board_height = 65       # mod 75
 max_steps = 200
 num_offense_players = 8
 num_defense_players = 4
@@ -19,7 +19,7 @@ defense_speed = 1.5
 NUM_DIRECTIONS = 8
 
 offense_start_x = 0
-defense_start_x = 40
+defense_start_x = 35      # mod 40
 
 ball_speed = 3.0
 ball_slowdown = 0.95

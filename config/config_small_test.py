@@ -5,7 +5,7 @@ random_start_noise = 2
 
 # env
 board_width = 100
-board_height = 40         # mod
+board_height = 25         # mod 30
 max_steps = 200
 num_offense_players = 3
 num_defense_players = 2
@@ -19,11 +19,12 @@ defense_speed = 1.5
 NUM_DIRECTIONS = 8
 
 offense_start_x = 0
-defense_start_x = 35          # mod
+defense_start_x = 35          # mod 40
 
 ball_speed = 2.5
 ball_slowdown = 0.95
 
+agent_progress_reward_scale = .25
 
 
 assert ball_speed > offense_radius

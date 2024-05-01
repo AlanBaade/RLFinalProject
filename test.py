@@ -7,11 +7,12 @@ from stable_baselines3.common.env_util import make_vec_env
 import time
 
 import src.environment
+import src.environment_agent_rew
 
-model = PPO.load("models/soccer-individual-marl")
+model = PPO.load("models/agrew/soccer-joint-marl")
 import config.config_small_train as cfg
 
-env = gym.make('SoccerEnv-v0', cfg=cfg)
+env = gym.make('SoccerEnvAgentRew-v0', cfg=cfg)
 obs, _ = env.reset()
 done = False
 
@@ -25,3 +26,4 @@ while not done:
     idx += 1
 env.render()
 print(idx)
+
