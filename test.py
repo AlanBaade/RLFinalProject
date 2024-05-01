@@ -9,7 +9,7 @@ import time
 import src.environment
 
 model = PPO.load("models/soccer-joint-transformer-large")
-import config.config_small_test as cfg
+import config.config_large_train as cfg
 
 env = gym.make('SoccerEnv-v0', cfg=cfg)
 obs, _ = env.reset()

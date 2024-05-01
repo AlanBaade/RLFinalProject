@@ -3,7 +3,18 @@ from gymnasium import spaces
 import torch as th
 from torch import nn
 from stable_baselines3.common.policies import ActorCriticPolicy
-
+from stable_baselines3.common.policies import ActorCriticPolicy
+import torch as th
+from stable_baselines3.common.distributions import (
+    BernoulliDistribution,
+    CategoricalDistribution,
+    DiagGaussianDistribution,
+    Distribution,
+    MultiCategoricalDistribution,
+    StateDependentNoiseDistribution,
+    make_proba_distribution,
+)
+from torch import nn
 
 class TransformerNetwork(nn.Module):
     """
@@ -18,8 +29,8 @@ class TransformerNetwork(nn.Module):
     def __init__(
             self,
             feature_dim: int,
-            last_layer_dim_pi: int = 48,
-            last_layer_dim_vf: int = 48,
+            last_layer_dim_pi: int = 64,
+            last_layer_dim_vf: int = 64,
             num_offense: int = 3,
     ):
         super().__init__()
@@ -42,14 +53,14 @@ class TransformerNetwork(nn.Module):
         self.policy_net = nn.Sequential(
             *[nn.TransformerEncoderLayer(d_model=d_model, nhead=1, dim_feedforward=64, dropout=0.1, layer_norm_eps=1e-05, batch_first=True, norm_first=False,
                                          bias=True) for _ in range(1)],
-            nn.Linear(d_model, last_layer_dim_pi // num_offense)
+            # nn.Linear(d_model, last_layer_dim_pi)
         )
 
         # Value network
         self.value_net = nn.Sequential(
             *[nn.TransformerEncoderLayer(d_model=d_model, nhead=1, dim_feedforward=64, dropout=0.1, layer_norm_eps=1e-05, batch_first=True, norm_first=False,
                                          bias=True) for _ in range(1)],
-            nn.Linear(d_model, last_layer_dim_pi // num_offense)
+            # nn.Linear(d_model, last_layer_dim_pi)
         )
 
         self.num_offense = num_offense
@@ -76,7 +87,7 @@ class TransformerNetwork(nn.Module):
         if not shared:
             features = self.get_shared(features)
         res = self.value_net(features)
-        res = res.view(features.size(0), -1)
+        res = res.mean(dim=-2)
         return res
 
 
@@ -91,6 +102,7 @@ class TransformerActorCriticPolicy(ActorCriticPolicy):
     ):
         # Disable orthogonal initialization
         self.num_offense = action_space.shape[0]
+        self.last_layer_dim_pi = 64
         kwargs["ortho_init"] = False
         super().__init__(
             observation_space,
@@ -100,6 +112,34 @@ class TransformerActorCriticPolicy(ActorCriticPolicy):
             *args,
             **kwargs,
         )
+        self.action_net = nn.Linear(self.last_layer_dim_pi, self.action_space[0].n)
 
     def _build_mlp_extractor(self) -> None:
-        self.mlp_extractor = TransformerNetwork(self.features_dim, num_offense=self.num_offense)
+        self.mlp_extractor = TransformerNetwork(self.features_dim, num_offense=self.num_offense, last_layer_dim_pi=self.last_layer_dim_pi)
+
+    def _get_action_dist_from_latent(self, latent_pi: th.Tensor) -> Distribution:
+        """
+        Retrieve action distribution given the latent codes.
+
+        :param latent_pi: Latent code for the actor
+        :return: Action distribution
+        """
+        b = latent_pi.size(0)
+        latent_pi = latent_pi.view(b * self.num_offense, -1)
+        mean_actions = self.action_net(latent_pi).view(b, -1)
+
+        if isinstance(self.action_dist, DiagGaussianDistribution):
+            return self.action_dist.proba_distribution(mean_actions, self.log_std)
+        elif isinstance(self.action_dist, CategoricalDistribution):
+            # Here mean_actions are the logits before the softmax
+            return self.action_dist.proba_distribution(action_logits=mean_actions)
+        elif isinstance(self.action_dist, MultiCategoricalDistribution):
+            # Here mean_actions are the flattened logits
+            return self.action_dist.proba_distribution(action_logits=mean_actions)
+        elif isinstance(self.action_dist, BernoulliDistribution):
+            # Here mean_actions are the logits (before rounding to get the binary actions)
+            return self.action_dist.proba_distribution(action_logits=mean_actions)
+        elif isinstance(self.action_dist, StateDependentNoiseDistribution):
+            return self.action_dist.proba_distribution(mean_actions, self.log_std, latent_pi)
+        else:
+            raise ValueError("Invalid action distribution")

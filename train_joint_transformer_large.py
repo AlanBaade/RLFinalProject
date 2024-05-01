@@ -11,7 +11,7 @@ import time
 
 import config.config_large_train as cfg
 
-vec_env = make_vec_env("SoccerEnv-v0", env_kwargs={"cfg": cfg}, n_envs=8)
+vec_env = make_vec_env("SoccerEnv-v0", env_kwargs={"cfg": cfg}, n_envs=64)
 
 from transformer.transformer_nn import TransformerActorCriticPolicy
 from individual_marl.custom_extractor import CustomExtractor
@@ -20,7 +20,7 @@ model = PPO(
     TransformerActorCriticPolicy,
     vec_env,
     verbose=1,
-    n_steps=128,
+    n_steps=64,
 )
 
 out_path = "experiment_out/soccer-joint-transformer-large"

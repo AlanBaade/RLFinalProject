@@ -20,6 +20,7 @@ policy_kwargs = dict(
     features_extractor_class=CustomExtractor
 )
 
+
 model = PPO(
     CustomActorCriticPolicy,
     vec_env,
